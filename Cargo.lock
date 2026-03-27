@@ -14439,6 +14439,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "xmtp-rs"
+version = "1.10.0"
+dependencies = [
+ "alloy",
+ "anyhow",
+ "chrono",
+ "prost",
+ "serde",
+ "valuable",
+ "xmtp_api",
+ "xmtp_api_d14n",
+ "xmtp_common",
+ "xmtp_configuration",
+ "xmtp_content_types",
+ "xmtp_cryptography",
+ "xmtp_db",
+ "xmtp_id",
+ "xmtp_mls",
+ "xmtp_proto",
+]
+
+[[package]]
 name = "xmtp-workspace-hack"
 version = "0.1.0"
 dependencies = [

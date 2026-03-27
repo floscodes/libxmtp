@@ -1,4 +1,3 @@
-use anyhow::Error;
 use prost::Message;
 use serde::Serialize;
 use valuable::Valuable;
@@ -21,7 +20,7 @@ pub struct SerializableGroup {
 }
 
 impl SerializableGroup {
-    pub async fn from<Context: XmtpSharedContext>(group: &MlsGroup<Context>) -> Result<Self, Error> {
+    pub async fn from<Context: XmtpSharedContext>(group: &MlsGroup<Context>) -> Self {
         let group_id = hex::encode(group.group_id.clone());
         let members = group
             .members()
@@ -40,7 +39,8 @@ impl SerializableGroup {
             metadata: SerializableGroupMetadata {
                 creator_inbox_id: metadata.creator_inbox_id.clone(),
                 policy: permissions
-                    .preconfigured_policy()?
+                    .preconfigured_policy()
+                    .expect("could not get policy")
                     .to_string(),
             },
         }
