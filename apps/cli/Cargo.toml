@@ -11,12 +11,16 @@ rust-version.workspace = true
 edition.workspace = true
 publish.workspace = true
 
+[lib]
+name = "xmtp_cli"
+path = "lib.rs"
+
 [lints]
 workspace = true
 
 [[bin]]
 name = "xmtp_cli"
-path = "cli-client.rs"
+path = "cli_client.rs"
 
 [dependencies]
 alloy = { workspace = true, features = ["signer-mnemonic"] }

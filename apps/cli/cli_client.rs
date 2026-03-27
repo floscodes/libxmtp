@@ -3,11 +3,14 @@
 XLI is a Commandline client using XMTPv3.
 */
 
+#[path = "debug.rs"]
 mod debug;
+#[path = "pretty.rs"]
 mod pretty;
+#[path = "serializable.rs"]
 mod serializable;
 
-use crate::serializable::{SerializableGroup, SerializableMessage};
+use serializable::{SerializableGroup, SerializableMessage};
 use alloy::signers::local::{MnemonicBuilder, PrivateKeySigner, coins_bip39::English};
 use clap::{Parser, Subcommand, ValueEnum};
 use color_eyre::eyre::eyre;
@@ -56,12 +59,12 @@ use xmtp_mls::{builder::ClientBuilderError, client::ClientError};
 use xmtp_proto::types::ApiIdentifier;
 
 #[macro_use]
-extern crate tracing;
+use tracing::*;
 
 pub type MlsContext =
     Arc<XmtpMlsLocalContext<XmtpApiClient, xmtp_db::DefaultStore, xmtp_db::DefaultMlsStore>>;
-type Client = xmtp_mls::client::Client<MlsContext>;
-type RustMlsGroup = xmtp_mls::groups::MlsGroup<MlsContext>;
+pub type Client = xmtp_mls::client::Client<MlsContext>;
+pub type RustMlsGroup = xmtp_mls::groups::MlsGroup<MlsContext>;
 
 #[derive(clap::ValueEnum, Clone, Default, Debug, serde::Serialize, PartialEq)]
 #[serde(rename_all = "kebab-case")]
@@ -149,7 +152,7 @@ enum Commands {
 }
 
 #[derive(Debug, Error)]
-enum CliError {
+pub enum CliError {
     #[error("signature failed to generate")]
     Signature(#[from] SignatureError),
     #[error("client error")]
@@ -455,7 +458,7 @@ async fn main() -> color_eyre::eyre::Result<()> {
     Ok(())
 }
 
-async fn create_client<C: XmtpApi + Clone + XmtpQuery + 'static>(
+pub async fn create_client<C: XmtpApi + Clone + XmtpQuery + 'static>(
     cli: &Cli,
     account: IdentityStrategy,
     grpc: C,
@@ -479,7 +482,7 @@ async fn create_client<C: XmtpApi + Clone + XmtpQuery + 'static>(
     Ok(client)
 }
 
-async fn register<C>(
+pub async fn register<C>(
     cli: &Cli,
     maybe_seed_phrase: Option<String>,
     client: C,
@@ -528,7 +531,7 @@ where
     Ok(())
 }
 
-async fn get_group(client: &Client, group_id: Vec<u8>) -> Result<RustMlsGroup, CliError> {
+pub async fn get_group(client: &Client, group_id: Vec<u8>) -> Result<RustMlsGroup, CliError> {
     client.sync_welcomes().await?;
     let group = client.group(&group_id)?;
     group
@@ -539,7 +542,7 @@ async fn get_group(client: &Client, group_id: Vec<u8>) -> Result<RustMlsGroup, C
     Ok(group)
 }
 
-async fn send(group: RustMlsGroup, msg: String) -> Result<(), CliError> {
+pub async fn send(group: RustMlsGroup, msg: String) -> Result<(), CliError> {
     let mut buf = Vec::new();
     TextCodec::encode(msg.clone())
         .unwrap()
@@ -557,7 +560,7 @@ async fn send(group: RustMlsGroup, msg: String) -> Result<(), CliError> {
     Ok(())
 }
 
-fn format_messages(
+pub fn format_messages(
     messages: Vec<StoredGroupMessage>,
     my_account_address: String,
 ) -> Result<String, CliError> {
@@ -592,7 +595,7 @@ fn static_enc_key() -> EncryptionKey {
     [2u8; 32].into()
 }
 
-async fn get_encrypted_store(
+pub async fn get_encrypted_store(
     db: &Option<PathBuf>,
 ) -> Result<EncryptedMessageStore<NativeDb>, CliError> {
     let store = match db {
@@ -622,7 +625,7 @@ fn pretty_delta(now: u64, then: u64) -> String {
     f.convert(Duration::from_nanos(diff))
 }
 
-fn pretty_association_state(state: &AssociationState) -> (Identifier, Vec<String>, Vec<String>) {
+pub fn pretty_association_state(state: &AssociationState) -> (Identifier, Vec<String>, Vec<String>) {
     let recovery_ident = state.recovery_identifier().clone();
     let installation_ids = state
         .installation_ids()
@@ -639,7 +642,7 @@ fn pretty_association_state(state: &AssociationState) -> (Identifier, Vec<String
     (recovery_ident, installation_ids, addresses)
 }
 
-fn address_to_identity(addresses: &[impl AsRef<str>]) -> Vec<Identifier> {
+pub fn address_to_identity(addresses: &[impl AsRef<str>]) -> Vec<Identifier> {
     addresses
         .iter()
         .map(|addr| Identifier::eth(addr.as_ref()).expect("Eth address is invalid"))

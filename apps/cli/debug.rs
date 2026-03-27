@@ -3,6 +3,7 @@ use clap::Subcommand;
 use openmls::prelude::ProtocolMessage;
 use openmls::prelude::{MlsMessageBodyIn, MlsMessageIn, OpenMlsProvider, tls_codec::Deserialize};
 use std::collections::HashMap;
+use tracing::*;
 use xmtp_api::GetIdentityUpdatesV2Filter;
 use xmtp_id::InboxUpdate;
 use xmtp_id::associations::unverified::UnverifiedAction;
@@ -34,7 +35,7 @@ fn format_timestamp(timestamp_ns: u64) -> String {
     datetime.format("%Y-%m-%d %H:%M:%S%.3f UTC").to_string()
 }
 
-pub async fn debug_group_messages(client: &crate::Client, group_id: Vec<u8>) -> Result<(), String> {
+pub async fn debug_group_messages(client: &super::Client, group_id: Vec<u8>) -> Result<(), String> {
     let api_client = client.context.api();
     let envelopes = api_client
         .query_group_messages(group_id.into())
@@ -56,7 +57,7 @@ pub async fn debug_group_messages(client: &crate::Client, group_id: Vec<u8>) -> 
 }
 
 pub async fn debug_welcome_messages(
-    client: &crate::Client,
+    client: &super::Client,
     installation_id: Vec<u8>,
 ) -> Result<(), String> {
     let api_client = client.context.api();
@@ -87,7 +88,7 @@ pub async fn debug_welcome_messages(
 }
 
 pub async fn debug_key_packages(
-    client: &crate::Client,
+    client: &super::Client,
     installation_id: Vec<u8>,
 ) -> Result<(), String> {
     let api_client = client.context.api();
@@ -114,7 +115,7 @@ pub async fn debug_key_packages(
 }
 
 pub async fn debug_identity_updates(
-    client: &crate::Client,
+    client: &super::Client,
     inbox_id: Vec<u8>,
 ) -> Result<(), String> {
     let api_client = client.context.api();
@@ -159,7 +160,7 @@ pub async fn debug_identity_updates(
     Ok(())
 }
 
-pub async fn handle_debug(client: &crate::Client, command: &DebugCommands) -> Result<(), String> {
+pub async fn handle_debug(client: &super::Client, command: &DebugCommands) -> Result<(), String> {
     match command {
         DebugCommands::GroupMessages { group_id } => {
             info!("Querying group messages for group id: {}", group_id);

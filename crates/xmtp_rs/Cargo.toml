@@ -1,5 +1,5 @@
 [package]
-name = "xmtp-rs"
+name = "xmtp_rs"
 license.workspace = true
 version.workspace = true
 rust-version.workspace = true
@@ -10,6 +10,7 @@ edition.workspace = true
 alloy = { workspace = true, features = ["signer-mnemonic"] }
 anyhow.workspace = true
 chrono.workspace = true
+xmtp_cli = { path = "../../apps/cli" }
 prost.workspace = true
 serde.workspace = true
 valuable.workspace = true

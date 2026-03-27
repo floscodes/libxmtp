@@ -5,7 +5,7 @@ members = [
   # Bindings
   "bindings/*",
   # Core crates
-  "crates/*", "sdks/xmtp-rs",
+  "crates/*",
 ]
 exclude = ["apps/android"]
 

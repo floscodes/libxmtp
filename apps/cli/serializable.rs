@@ -1,6 +1,6 @@
-use anyhow::Error;
 use prost::Message;
 use serde::Serialize;
+use tracing::warn;
 use valuable::Valuable;
 use xmtp_content_types::{ContentCodec, text::TextCodec};
 use xmtp_db::group_message::StoredGroupMessage;
@@ -21,7 +21,7 @@ pub struct SerializableGroup {
 }
 
 impl SerializableGroup {
-    pub async fn from<Context: XmtpSharedContext>(group: &MlsGroup<Context>) -> Result<Self, Error> {
+    pub async fn from<Context: XmtpSharedContext>(group: &MlsGroup<Context>) -> Self {
         let group_id = hex::encode(group.group_id.clone());
         let members = group
             .members()
@@ -40,7 +40,8 @@ impl SerializableGroup {
             metadata: SerializableGroupMetadata {
                 creator_inbox_id: metadata.creator_inbox_id.clone(),
                 policy: permissions
-                    .preconfigured_policy()?
+                    .preconfigured_policy()
+                    .expect("could not get policy")
                     .to_string(),
             },
         }
@@ -72,6 +73,7 @@ pub fn maybe_get_text(msg: &StoredGroupMessage) -> Option<String> {
         return None;
     };
     let Ok(decoded) = TextCodec::decode(encoded_content) else {
+        warn!("Skipping over unrecognized codec");
         return None;
     };
     Some(decoded)
