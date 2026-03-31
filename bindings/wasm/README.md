@@ -30,8 +30,7 @@ These commands require Homebrew and `llvm` to be installed. See above.
 
 ### macOS aarch64 (Apple Silicon) additional configuration
 
-When compiling on macOS with aarch64 (Apple Silicon) architecture a build error might occur when trying to use the `clang` compiler
-which is necessary to build some dependencies. As mentioned above you need to install `llvm` and tell `cargo` to use compiler,
+When building on macOS with aarch64 (Apple Silicon) architecture a build error might occur when trying to use the `clang` compiler which is necessary to build some dependencies. As mentioned above you need to install `llvm` and tell `cargo` to use compiler,
 archiver and linker from `llvm` (see the example below).
 
 **Fix:**
