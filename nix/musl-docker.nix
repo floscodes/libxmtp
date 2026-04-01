@@ -36,6 +36,13 @@
             architecture = "amd64";
           }
         );
+        validation-service-image-aarch64-unknown-linux-musl = pkgs.dockerTools.buildLayeredImage (
+          lib.recursiveUpdate imageCommon {
+            config.entrypoint = [
+              "${self'.packages.mls-validation-service-aarch64-unknown-linux-musl}/bin/mls-validation-service"
+            ];
+          }
+        );
       }
       # create mls validation service for all the cross compilation targets
       // lib.mapAttrs' (target: crossPkgs: {
