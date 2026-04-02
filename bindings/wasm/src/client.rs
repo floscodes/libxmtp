@@ -172,8 +172,8 @@ fn init_logging(options: LogOptions) -> Result<(), JsError> {
           .with_level(true)
           .without_time() // need to test whether this would break browsers
           .with_target(true);
-        
-        // Trying to init tracing subscriber. Only init if no other piece of code did it already.
+
+        // Initialize tracing subscriber. Silently ignored if already set by another crate
         tracing_subscriber::registry().with(filter).with(fmt).try_init();
       } else {
         let fmt = tracing_subscriber::fmt::layer()
