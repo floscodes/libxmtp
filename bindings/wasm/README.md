@@ -28,27 +28,31 @@ These commands require Homebrew and `llvm` to be installed. See above.
 - `yarn build:macos`: Build a release version of the WASM bindings
 - `yarn test:integration:macos`: Run integration tests using vitest
 
-### macOS aarch64 (Apple Silicon) additional configuration
+## Building with Cargo or other tools that rely on it
 
-When building on macOS with aarch64 (Apple Silicon) architecture a build error might occur when trying to use the `clang` compiler which is necessary to build some dependencies. As mentioned above you need to install `llvm` and tell `cargo` to use compiler,
-archiver and linker from `llvm` (see the example below).
+When building with Cargo, a `config.toml` file must be present at `.cargo/config.toml` in the project root. At minimum, it needs to specify the default build target:
 
-**Fix:**
+```toml
+[build]
+target = "wasm32-unknown-unknown"
+```
 
-- Create a `.cargo` directory in your project root
-- In this directory create a `config.toml`file
-- Add the following to `config.toml`:
+Without this, Cargo will not default to the correct target and `rust-analyzer` will report errors.
 
-  ```toml
-  [target.wasm32-unknown-unknown]
-  linker = "/opt/homebrew/opt/llvm/bin/wasm-ld"
+### Apple Silicon (M-series Macs)
 
-  [env]
-  CC_wasm32_unknown_unknown = "/opt/homebrew/opt/llvm/bin/clang"
-  AR_wasm32_unknown_unknown = "/opt/homebrew/opt/llvm/bin/llvm-ar"
-  ```
+If you are developing on a Mac with an Apple Silicon chip, you also need to configure the linker and compiler toolchain explicitly. Add the following to your `.cargo/config.toml`:
 
-This should fix the building issues.
+```toml
+[target.wasm32-unknown-unknown]
+linker = "/opt/homebrew/opt/llvm/bin/wasm-ld"
+
+[env]
+CC_wasm32_unknown_unknown = "/opt/homebrew/opt/llvm/bin/clang"
+AR_wasm32_unknown_unknown = "/opt/homebrew/opt/llvm/bin/llvm-ar"
+```
+
+> **Note:** This assumes LLVM was installed via Homebrew (`brew install llvm`). If your installation path differs, adjust the paths accordingly.
 
 # Publishing
 
