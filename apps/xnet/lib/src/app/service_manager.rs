@@ -75,14 +75,14 @@ impl ServiceManager {
         // Create Traefik config manager (loads existing routes from file)
         let traefik_config = TraefikConfig::new(traefik.dynamic_config_path())?;
 
-        // Start monitoring services (Prometheus + Grafana + PgAdmin) in parallel
+        // Start monitoring services (Prometheus + Grafana) in parallel.
+        // PgAdmin is started AFTER xmtpd nodes — see below.
         let mut prometheus = Prometheus::builder().build();
         let mut grafana = Grafana::builder().build();
-        let mut pgadmin = PgAdmin::builder().build();
+        let pgadmin = PgAdmin::builder().build();
         let launch = vec![
             prometheus.start(&proxy).boxed(),
             grafana.start(&proxy).boxed(),
-            pgadmin.start(&proxy).boxed(),
         ];
         futures::future::try_join_all(launch).await?;
 
@@ -175,6 +175,11 @@ impl ServiceManager {
             }
         }
 
+        // Start PgAdmin AFTER xmtpd nodes so it can discover their
+        // ReplicationDb containers via Docker labels (xnet.pgadmin=true).
+        // Dependency chain: ReplicationDb (labels) → PgAdmin (scans labels)
+        this.pgadmin.start(&this.proxy).await?;
+
         Ok(this)
     }
 
@@ -245,8 +250,10 @@ impl ServiceManager {
         // Update Prometheus scrape targets with the new node
         self.prometheus.update_targets(&self.nodes)?;
 
-        // Update PgAdmin servers.json with the new node's replication DB
-        self.pgadmin.update_servers(&self.nodes)?;
+        // Rescan Docker labels to pick up the new node's ReplicationDb.
+        // PgAdmin discovers databases via xnet.pgadmin=true container labels,
+        // so it doesn't need to know about Xmtpd directly.
+        self.pgadmin.discover_databases().await?;
 
         Ok(())
     }
