@@ -214,16 +214,17 @@ public final class Client {
 	private static let apiCache = ApiClientCache()
 
 	public lazy var conversations: Conversations = .init(
-		client: self, ffiConversations: ffiClient.conversations(),
+		clientInboxId: inboxID,
+		ffiConversations: ffiClient.conversations(),
 		ffiClient: ffiClient
 	)
 
 	public lazy var preferences: PrivatePreferences = .init(
-		client: self, ffiClient: ffiClient
+		ffiClient: ffiClient
 	)
 
 	public lazy var debugInformation: XMTPDebugInformation = .init(
-		client: self, ffiClient: ffiClient
+		ffiClient: ffiClient
 	)
 
 	static var codecRegistry = CodecRegistry()
