@@ -863,16 +863,19 @@ where
         let conn = self.context.db();
 
         // Fetch the message before deleting so we can emit the decoded message in the event
-        let decoded_message = self.message_v2(message_id.clone()).ok();
+        let msg = conn.get_group_message(&message_id)?;
 
         let num_deleted = conn.delete_message_by_id(&message_id)?;
         // Fire a local event if the message was successfully deleted
         if num_deleted > 0
-            && let Some(message) = decoded_message
+            && let Some(message) = msg
         {
-            let _ = self.context.local_events().send(
-                crate::subscriptions::LocalEvents::MessageDeleted(Box::new(message)),
-            );
+            let _ =
+                self.context
+                    .local_events()
+                    .send(crate::subscriptions::LocalEvents::MsgsDeleted(vec![
+                        message,
+                    ]));
         }
 
         Ok(num_deleted)
@@ -1168,8 +1171,8 @@ where
             .api()
             .get_inbox_ids(requests)
             .await?
-            .into_iter()
-            .filter_map(|(ident, _)| Some((ident.try_into().ok()?, true)))
+            .into_keys()
+            .filter_map(|ident| Some((ident.try_into().ok()?, true)))
             .collect();
 
         // Fill in the rest with false
@@ -1227,7 +1230,7 @@ pub(crate) mod tests {
             .unwrap();
 
         let conn = amal.context.store().conn();
-        conn.raw_query_write(|conn| diesel::delete(identity_updates::table).execute(conn))
+        conn.raw_query(|conn| diesel::delete(identity_updates::table).execute(conn))
             .unwrap();
 
         let members = group.members().await.unwrap();

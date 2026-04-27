@@ -12455,9 +12455,9 @@ checksum = "f87165f0995f63a9fbeea62b64d10b4d9d8e78ec6d7d51fb2125fda7bb36788f"
 
 [[package]]
 name = "rustls-webpki"
-version = "0.103.11"
+version = "0.103.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "20a6af516fea4b20eccceaf166e8aa666ac996208e8a644ce3ef5aa783bc7cd4"
+checksum = "61c429a8649f110dddef65e2a5ad240f747e85f7758a6bccc7e5777bd33f756e"
 dependencies = [
  "aws-lc-rs",
  "ring",
@@ -17776,6 +17776,7 @@ dependencies = [
  "alloy",
  "async-trait",
  "bincode 1.3.3",
+ "bon",
  "bytes",
  "chrono",
  "const-hex",
@@ -17853,6 +17854,7 @@ dependencies = [
 name = "xmtp_mls_common"
 version = "1.10.0"
 dependencies = [
+ "bon",
  "const-hex",
  "openmls",
  "proptest",
@@ -17886,6 +17888,7 @@ dependencies = [
  "http 1.4.0",
  "mockall",
  "openmls",
+ "openmls_traits",
  "pbjson",
  "pbjson-build",
  "pbjson-types",
@@ -18012,6 +18015,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_yaml",
+ "tempfile",
  "tokio",
  "toml 0.9.12+spec-1.1.0",
  "toxiproxy_rust",

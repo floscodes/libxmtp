@@ -14,6 +14,7 @@ mod test_network;
 mod test_prepare_message_for_later_publish;
 mod test_proposals;
 mod test_send_message_opts;
+mod test_validate_app_data_update;
 mod test_welcome_pointers;
 mod test_welcomes;
 
@@ -30,6 +31,7 @@ use prost::Message;
 use tls_codec::Deserialize;
 use xmtp_api_d14n::protocol::XmtpQuery;
 use xmtp_configuration::Originators;
+use xmtp_db::ConnectionExt;
 use xmtp_db::XmtpOpenMlsProviderRef;
 use xmtp_db::refresh_state::EntityKind;
 use xmtp_id::InboxOwner;
@@ -437,7 +439,7 @@ async fn test_dm_stitching() {
     let alix_groups = alix
         .context
         .db()
-        .raw_query_read(|conn| {
+        .raw_query(|conn| {
             groups::table
                 .order(groups::created_at_ns.desc())
                 .load::<StoredGroup>(conn)
@@ -3436,7 +3438,7 @@ async fn process_messages_abort_on_retryable_error() {
         .unwrap();
 
     let db = bo.context.store().db();
-    db.raw_query_write(|c| {
+    db.raw_query(|c| {
         c.batch_execute("BEGIN EXCLUSIVE").unwrap();
         Ok::<_, diesel::result::Error>(())
     })
