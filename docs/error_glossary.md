@@ -4,7 +4,7 @@
 
 This document lists all error codes defined in LibXMTP, the core library underlying the XMTP SDKs. Each error code is a unique identifier returned to help diagnose issues.
 
-**30 error types** across **10 crates** with **342 total error codes**.
+**30 error types** across **10 crates** with **343 total error codes**.
 
 ## mobile
 
@@ -535,6 +535,7 @@ Errors that can occur when working with GroupMutablePermissions.
 | `SubscribeError::Db` | Database connection error. Database connection failed. Retryable. |
 | `SubscribeError::Conversion` | Conversion error. Proto conversion failed. Not retryable. |
 | `SubscribeError::Envelope` | Envelope error. Decentralized API envelope error. May be retryable. |
+| `SubscribeError::Enriched` | Enriched Message Error. |
 
 ## xmtp_mls_common
 
